@@ -322,6 +322,7 @@ try:
                         update.write('简要说明：'+dl[2]+'\n\n')
             update.write('******************************************************************\n\n')
             print("ok\n")
+    os.system("pause")
 except error.HTTPError as e:
     print('HTTPError!')
     print(e.code)
