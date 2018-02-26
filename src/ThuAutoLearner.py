@@ -85,7 +85,7 @@ try:
                 os.mkdir(rootpath+lesson[1])
                 os.mkdir(rootpath+lesson[1]+'\\作业附件')
             update.write("课程名称："+lesson[1]+'\n\n')
-            update.write('未读公告：'+'\n\n')
+            update.write('7天内长传的公告：'+'\n\n')
             if(len(lesson[0])>8):
                 idend = len(lesson[0])
                 idbegin = lesson[0].find('home')+5
@@ -107,7 +107,8 @@ try:
                 note_html = opener.open(note_req).read().decode('utf-8')
                 note_json = json.loads(note_html)
                 for note in note_json['paginationList']['recordList']:
-                    if(note['status'][0]=='0'):
+                    loadtime = time.mktime(time.strptime(note['courseNotice']['regDate'],"%Y-%m-%d"))
+                    if(time.time()-loadtime<7*24*3600):
                         print(note['courseNotice']['title']+'\n')
                         update.write(str(notenum)+'.标题:'+note['courseNotice']['title']+'\n'+'发布人:'+note['courseNotice']['owner']+'  发布时间:'+note['courseNotice']['regDate']+'\n')
                         notenum=notenum+1
@@ -235,7 +236,8 @@ try:
             np = noteListHTMLParser()
             np.feed(note_html)
             for note in np.note:
-                if(note[4]):
+                loadtime = time.mktime(time.strptime(note[3],"%Y-%m-%d"))
+                if(time.time()-loadtime<7*24*3600):
                     turl = parse.quote(note[0], safe = string.printable)
                     treq = request.Request(turl,headers=header)
                     thtml = opener.open(treq).read().decode('utf-8')
