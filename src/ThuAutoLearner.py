@@ -18,15 +18,28 @@ if(os.path.exists("conf.txt")==False):
     print("conf.txt不存在")
     os.system("pause")
     sys.exit(1)
+userid = ""
+userpass = ""
+rootpath = ""
+temp = ""
 conffile = open("conf.txt",'r')
-conffile.readline()
-userid = conffile.readline().replace("\n","")
-conffile.readline()
-userpass = conffile.readline().replace("\n","")
-conffile.readline()
-rootpath = conffile.readline().replace("\n","")
+while((temp is "") or (temp is "\n")):
+    temp = conffile.readline().replace("\n","")
+temp = ""
+while((userid is "")or(userid is "\n")):
+    userid = conffile.readline().replace("\n","")
+while((temp is "") or (temp is "\n")):
+    temp = conffile.readline().replace("\n","")
+temp = ""
+while((userpass is "")or(userpass is "\n")):
+    userpass = conffile.readline().replace("\n","")
+while((temp is "") or (temp is "\n")):
+    temp = conffile.readline().replace("\n","")
+temp = ""
+while((rootpath is "")or(rootpath is "\n")):
+    rootpath = conffile.readline().replace("\n","")
 if(os.path.exists(rootpath)==False):
-    print("目标路径不存在")
+    print("目标路径 "+rootpath+" 不存在")
     os.system("pause")
     sys.exit(1)
 #登录网络学堂
