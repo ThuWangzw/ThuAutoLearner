@@ -85,7 +85,7 @@ try:
                 os.mkdir(rootpath+lesson[1])
                 os.mkdir(rootpath+lesson[1]+'\\作业附件')
             update.write("课程名称："+lesson[1]+'\n\n')
-            update.write('7天内上传的公告：'+'\n\n')
+            update.write('***7天内上传的公告：'+'\n\n')
             if(len(lesson[0])>8):
                 idend = len(lesson[0])
                 idbegin = lesson[0].find('home')+5
@@ -136,7 +136,7 @@ try:
                 download_req = request.Request(download_url,headers=header)
                 download_html = opener.open(download_req).read().decode('utf-8')
                 download_json = json.loads(download_html)
-                update.write("文件："+'\n\n')
+                update.write("***文件："+'\n\n')
                 for i in download_json['resultList']:
                     for j in download_json['resultList'][i]['childMapData']:
                         for k in download_json['resultList'][i]['childMapData'][j]['courseCoursewareList']:
@@ -185,7 +185,7 @@ try:
                 homework_req = request.Request(homework_url,headers=header)
                 homework_html = opener.open(homework_req).read().decode('utf-8')
                 homework_json = json.loads(homework_html)
-                update.write("未交作业："+'\n\n')
+                update.write("***未交作业："+'\n\n')
                 for homework in homework_json['resultList']:
                     if(homework['courseHomeworkRecord']['status']=="0"):
                         print(homework['courseHomeworkInfo']['title']+'\n')
@@ -248,10 +248,11 @@ try:
                     nnp.text = nnp.text.replace(u'\n',u' ')
                     print(note[1]+'\n')
                     update.write(str(notenum)+'.标题：'+note[1]+'\n'+'发布人：'+note[2]+'  发布时间：'+note[3]+'\n')
+                    notenum = notenum + 1
                     update.write('正文:'+nnp.text+'\n\n')
             #访问未交作业
             print("下载作业中……\n")
-            update.write("未交作业："+'\n\n')
+            update.write("***未交作业："+'\n\n')
             hw_url = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id="+lesson[0]
             hw_req = request.Request(hw_url,headers=header)
             hw_html = opener.open(hw_req).read().decode('utf-8')
@@ -299,7 +300,7 @@ try:
                     update.write('作业要求：'+hhwp.text+'\n\n')
             #访问未下载文件
             print("下载文件中……\n")
-            update.write("文件："+'\n\n')
+            update.write("***文件："+'\n\n')
             dl_url = 'http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id='+lesson[0]
             dl_req = request.Request(dl_url,headers=header)
             dl_html = opener.open(dl_req).read().decode('utf-8')
