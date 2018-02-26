@@ -85,7 +85,7 @@ try:
                 os.mkdir(rootpath+lesson[1])
                 os.mkdir(rootpath+lesson[1]+'\\作业附件')
             update.write("课程名称："+lesson[1]+'\n\n')
-            update.write('7天内长传的公告：'+'\n\n')
+            update.write('7天内上传的公告：'+'\n\n')
             if(len(lesson[0])>8):
                 idend = len(lesson[0])
                 idbegin = lesson[0].find('home')+5
