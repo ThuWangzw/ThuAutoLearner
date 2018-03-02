@@ -1,6 +1,7 @@
 from urllib import request
 from urllib import parse
 from urllib import error
+import urllib
 import string
 import os
 from MainHTMLParser import mainHTTPParser
@@ -86,10 +87,13 @@ try:
                 os.mkdir(rootpath+lesson[1]+'\\作业附件')
             update.write("课程名称："+lesson[1]+'\n\n')
             update.write('***7天内上传的公告：'+'\n\n')
-            if(len(lesson[0])>8):
-                idend = len(lesson[0])
-                idbegin = lesson[0].find('home')+5
-                lesson[0] = lesson[0][idbegin:idend]
+            if(len(lesson[0])>8 or (lesson[0] == '153978')):
+                if(len(lesson[0])>8):
+                    idend = len(lesson[0])
+                    idbegin = lesson[0].find('home')+5
+                    lesson[0] = lesson[0][idbegin:idend]
+                else:
+                    lesson[0]='2017-2018-2-34100254-0'
                 #重新登录
                 ndata = {}
                 ndata['i_user'] = userid
@@ -163,15 +167,15 @@ try:
                             file_req = request.Request(file_url,headers=header)
                             file_html = opener.open(file_req).read()
                             dlpath = rootpath+lesson[1]+'\\'+temp['fileName']
-                            dlpath.replace("?","_")
-                            dlpath.replace("*","_")
-                            dlpath.replace(":","_")
-                            dlpath.replace("\"","_")
-                            dlpath.replace("<","_")
-                            dlpath.replace(">","_")
-                            dlpath.replace("|","_")
-                            dlpath.replace("\\","_")
-                            dlpath.replace("/","_")
+                            dlpath = dlpath.replace("?","_")
+                            dlpath = dlpath.replace("*","_")
+                            dlpath = dlpath.replace(":","_")
+                            dlpath = dlpath.replace("\"","_")
+                            dlpath = dlpath.replace("<","_")
+                            dlpath = dlpath.replace(">","_")
+                            dlpath = dlpath.replace("|","_")
+                            dlpath = dlpath.replace("\\","_")
+                            dlpath = dlpath.replace("/","_")
                             filecontent = file_html
                             file = open(dlpath,"wb")
                             file.write(filecontent)
@@ -201,15 +205,15 @@ try:
                                 hfile_url = 'http://learn.cic.tsinghua.edu.cn/b/resource/downloadFileStream/'+homework['courseHomeworkInfo']['homewkAffix']
                                 hfile_req = request.Request(hfile_url,headers=header)
                                 hfile_html = opener.open(hfile_req).read()
-                                hfilepath.replace("?","_")
-                                hfilepath.replace("*","_")
-                                hfilepath.replace(":","_")
-                                hfilepath.replace("\"","_")
-                                hfilepath.replace("<","_")
-                                hfilepath.replace(">","_")
-                                hfilepath.replace("|","_")
-                                hfilepath.replace("\\","_")
-                                hfilepath.replace("/","_")
+                                hfilepath = hfilepath.replace("?","_")
+                                hfilepath = hfilepath.replace("*","_")
+                                hfilepath = hfilepath.replace(":","_")
+                                hfilepath = hfilepath.replace("\"","_")
+                                hfilepath = hfilepath.replace("<","_")
+                                hfilepath = hfilepath.replace(">","_")
+                                hfilepath = hfilepath.replace("|","_")
+                                hfilepath = hfilepath.replace("\\","_")
+                                hfilepath = hfilepath.replace("/","_")
                                 hfile_open = open(hfilepath,"wb")
                                 hfile_open.write(hfile_html)
                                 hfile_open.close()
@@ -309,21 +313,21 @@ try:
             for dl in dlp.dl:
                     dlFileRequest = request.Request(dl[0],headers=header)
                     dlFileResponse = opener.open(dlFileRequest)
-
                     tstr = dlFileResponse.info()['Content-Disposition']
                     begin = tstr.index("=")+2
                     end = len(tstr)-1
+
                     filename = tstr[begin:end]
                     filename = filename.encode("iso-8859-1").decode("gbk")
-                    filename.replace("?","_")
-                    filename.replace("*","_")
-                    filename.replace(":","_")
-                    filename.replace("\"","_")
-                    filename.replace("<","_")
-                    filename.replace(">","_")
-                    filename.replace("|","_")
-                    filename.replace("\\","_")
-                    filename.replace("/","_")
+                    filename = filename.replace("?","_")
+                    filename = filename.replace("*","_")
+                    filename = filename.replace(":","_")
+                    filename = filename.replace("\"","_")
+                    filename = filename.replace("<","_")
+                    filename = filename.replace(">","_")
+                    filename = filename.replace("|","_")
+                    filename = filename.replace("\\","_")
+                    filename = filename.replace("/","_")
                     dlpath = rootpath+lesson[1]+'\\'+filename
                     if(os.path.exists(dlpath) is not True):
                         print(dlpath)
