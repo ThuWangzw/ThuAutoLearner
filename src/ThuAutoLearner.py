@@ -140,49 +140,60 @@ try:
                 download_req = request.Request(download_url,headers=header)
                 download_html = opener.open(download_req).read().decode('utf-8')
                 download_json = json.loads(download_html)
-                update.write("***文件："+'\n\n')
+                update.write("***7天内上传的文件："+'\n\n')
                 for i in download_json['resultList']:
                     for j in download_json['resultList'][i]['childMapData']:
                         for k in download_json['resultList'][i]['childMapData'][j]['courseCoursewareList']:
                             temp = k['resourcesMappingByFileId']
-                            if(os.path.exists(rootpath+lesson[1]+'\\'+temp['fileName'])==True):
-                                continue
-                            print(k['title']+'\n')
-                            update.write(str(filenum)+'.文件标题：'+k['title']+ ' 大小：'+str(int(temp['fileSize'])/1024)+'KB\n')
-                            filenum = filenum+1
-                            update.write('文件名称：'+temp['fileName']+'\n')
-                            data = k['detail']
-                            if(data is not None):
-                                data = data.replace(u'\xa0',u'')
-                                data = data.replace(u'\r',u'')
-                                data = data.replace(u'\n',u'')
-                                data = data.replace(u'\t',u'')
-                                data = data.replace(u' ',u'')
+                            if(os.path.exists(rootpath+lesson[1]+'\\'+temp['fileName'])is not True):
+                                print(k['title']+'\n')
+                                update.write(str(filenum)+'.文件标题：'+k['title']+'上传时间:'+time.asctime(time.localtime(temp['regDate']))+ ' 大小：'+str(int(temp['fileSize'])/1024)+'KB\n')
+                                filenum = filenum+1
+                                update.write('文件名称：'+temp['fileName']+'\n')
+                                data = k['detail']
+                                if(data is not None):
+                                    data = data.replace(u'\xa0',u'')
+                                    data = data.replace(u'\r',u'')
+                                    data = data.replace(u'\n',u'')
+                                    data = data.replace(u'\t',u'')
+                                    data = data.replace(u' ',u'')
+                                else:
+                                    data = ""
+                                update.write('简要说明：'+data+'\n\n')
+                                fileid = temp['fileId']
+                                #下载文件和标记已下载
+                                file_url = 'http://learn.cic.tsinghua.edu.cn/b/resource/downloadFileStream/'+fileid
+                                file_req = request.Request(file_url,headers=header)
+                                file_html = opener.open(file_req).read()
+                                dlpath = rootpath+lesson[1]+'\\'+temp['fileName']
+                                dlpath = dlpath.replace("?","_")
+                                dlpath = dlpath.replace("*","_")
+                                dlpath = dlpath.replace("<","_")
+                                dlpath = dlpath.replace(">","_")
+                                dlpath = dlpath.replace("|","_")
+                                filecontent = file_html
+                                file = open(dlpath,"wb")
+                                file.write(filecontent)
+                                file.close()
+                                mark_url = 'http://learn.cic.tsinghua.edu.cn/b/courseFileAccess/markReadFile/'+temp['fileId']
+                                mark_req = request.Request(mark_url,headers=header)
+                                response = opener.open(mark_req).read().decode('utf-8')
                             else:
-                                data = ""
-                            update.write('简要说明：'+data+'\n\n')
-                            fileid = temp['fileId']
-                            #下载文件和标记已下载
-                            file_url = 'http://learn.cic.tsinghua.edu.cn/b/resource/downloadFileStream/'+fileid
-                            file_req = request.Request(file_url,headers=header)
-                            file_html = opener.open(file_req).read()
-                            dlpath = rootpath+lesson[1]+'\\'+temp['fileName']
-                            dlpath = dlpath.replace("?","_")
-                            dlpath = dlpath.replace("*","_")
-                            dlpath = dlpath.replace(":","_")
-                            dlpath = dlpath.replace("\"","_")
-                            dlpath = dlpath.replace("<","_")
-                            dlpath = dlpath.replace(">","_")
-                            dlpath = dlpath.replace("|","_")
-                            dlpath = dlpath.replace("\\","_")
-                            dlpath = dlpath.replace("/","_")
-                            filecontent = file_html
-                            file = open(dlpath,"wb")
-                            file.write(filecontent)
-                            file.close()
-                            mark_url = 'http://learn.cic.tsinghua.edu.cn/b/courseFileAccess/markReadFile/'+temp['fileId']
-                            mark_req = request.Request(mark_url,headers=header)
-                            response = opener.open(mark_req).read().decode('utf-8')
+                                regdate = temp['regDate']/1000
+                                if(time.time()-regdate<7*24*3600):
+                                    update.write(str(filenum)+'.文件标题：'+k['title']+'上传时间:'+time.asctime(time.localtime(temp['regDate']/1000))+ ' 大小：'+str(int(temp['fileSize'])/1024)+'KB\n')
+                                    filenum = filenum+1
+                                    update.write('文件名称：'+temp['fileName']+'\n')
+                                    data = k['detail']
+                                    if(data is not None):
+                                        data = data.replace(u'\xa0',u'')
+                                        data = data.replace(u'\r',u'')
+                                        data = data.replace(u'\n',u'')
+                                        data = data.replace(u'\t',u'')
+                                        data = data.replace(u' ',u'')
+                                    else:
+                                        data = ""
+                                    update.write('简要说明：'+data+'\n\n')
                 #提示未提交作业
                 print("下载作业中……\n")
                 homework_url = 'http://learn.cic.tsinghua.edu.cn/b/myCourse/homework/list4Student/'+lesson[0]+'/0'
@@ -201,19 +212,16 @@ try:
                         else:
                             update.write(' 有附件(已下载至课程对应文件夹)\n')
                             hfilepath = rootpath+lesson[1]+'\\'+'作业附件\\'+homework['courseHomeworkInfo']['homewkAffixFilename']
-                            if(os.path.exists(hfilepath) is not True):
+                            if(os.path.exists(hfilepath)is not True):
                                 hfile_url = 'http://learn.cic.tsinghua.edu.cn/b/resource/downloadFileStream/'+homework['courseHomeworkInfo']['homewkAffix']
                                 hfile_req = request.Request(hfile_url,headers=header)
                                 hfile_html = opener.open(hfile_req).read()
                                 hfilepath = hfilepath.replace("?","_")
                                 hfilepath = hfilepath.replace("*","_")
-                                hfilepath = hfilepath.replace(":","_")
-                                hfilepath = hfilepath.replace("\"","_")
                                 hfilepath = hfilepath.replace("<","_")
                                 hfilepath = hfilepath.replace(">","_")
                                 hfilepath = hfilepath.replace("|","_")
-                                hfilepath = hfilepath.replace("\\","_")
-                                hfilepath = hfilepath.replace("/","_")
+                                print(hfilepath)
                                 hfile_open = open(hfilepath,"wb")
                                 hfile_open.write(hfile_html)
                                 hfile_open.close()
@@ -273,38 +281,37 @@ try:
                     update.write(str(hwnum)+'.作业标题：'+hw[1]+'\n')
                     hwnum = hwnum + 1
                     update.write('发布日期：'+hw[2]+' 截止日期：'+hw[3])
-                    if(hhwp.havefile==0):
+                    if(hhwp.havefile==1):
                         update.write(' 有附件(已下载至课程对应文件夹)\n')
-                        if(hhwp.havefile):
-                            print(hhwp.url)
-                            filerequest = request.Request(hhwp.url,headers=header)
-                            fileresponse = opener.open(filerequest)
-                            file = fileresponse.read()
+                        print(hhwp.url)
+                        filerequest = request.Request(hhwp.url,headers=header)
+                        fileresponse = opener.open(filerequest)
+                        file = fileresponse.read()
 
-                            tstr = fileresponse.info()['Content-Disposition']
-                            begin = tstr.index("=")+2
-                            end = len(tstr)-1
-                            filename = tstr[begin:end]
-                            filename = filename.encode("iso-8859-1").decode("gbk")
-                            filename.replace("?","_")
-                            filename.replace("*","_")
-                            filename.replace(":","_")
-                            filename.replace("\"","_")
-                            filename.replace("<","_")
-                            filename.replace(">","_")
-                            filename.replace("|","_")
-                            filename.replace("\\","_")
-                            filename.replace("/","_")
-                            dlpath = rootpath+lesson[1]+'\\'+'作业附件\\'+filename
-                            dlfile = open(dlpath,'wb')
-                            dlfile.write(file)
-                            dlfile.close()
+                        tstr = fileresponse.info()['Content-Disposition']
+                        begin = tstr.index("=")+2
+                        end = len(tstr)-1
+                        filename = tstr[begin:end]
+                        filename = filename.encode("iso-8859-1").decode("gbk")
+                        filename.replace("?","_")
+                        filename.replace("*","_")
+                        filename.replace(":","_")
+                        filename.replace("\"","_")
+                        filename.replace("<","_")
+                        filename.replace(">","_")
+                        filename.replace("|","_")
+                        filename.replace("\\","_")
+                        filename.replace("/","_")
+                        dlpath = rootpath+lesson[1]+'\\'+'作业附件\\'+filename
+                        dlfile = open(dlpath,'wb')
+                        dlfile.write(file)
+                        dlfile.close()
                     else:
                         update.write(' 无附件\n')
                     update.write('作业要求：'+hhwp.text+'\n\n')
             #访问未下载文件
             print("下载文件中……\n")
-            update.write("***文件："+'\n\n')
+            update.write("***7天内上传的文件："+'\n\n')
             dl_url = 'http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id='+lesson[0]
             dl_req = request.Request(dl_url,headers=header)
             dl_html = opener.open(dl_req).read().decode('utf-8')
@@ -340,6 +347,12 @@ try:
                         update.write(str(filenum) + '.文件标题：'+dl[1]+' 上传时间：'+dl[4] + '大小：'+dl[3]+'\n')
                         filenum = filenum + 1
                         update.write('简要说明：'+dl[2]+'\n\n')
+                    else:
+                        loadtime = time.mktime(time.strptime(dl[4],"%Y-%m-%d"))
+                        if(time.time()-loadtime<7*24*3600):
+                            update.write(str(filenum) + '.文件标题：'+dl[1]+' 上传时间：'+dl[4] + '大小：'+dl[3]+'\n')
+                            filenum = filenum + 1
+                            update.write('简要说明：'+dl[2]+'\n\n')
             update.write('******************************************************************\n\n')
             print("ok\n")
     update.close()
