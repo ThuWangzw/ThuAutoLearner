@@ -33,7 +33,7 @@ class hwHTTPParser(HTMLParser):
             data = data.replace('\n','')
             data = data.replace('\t','')
             data = data.replace(' ','')
-            if(data=='无相关文件'):
+            if('无相关文件' in data):
                 self.havefile = 0
                 self.flag = -2
             else:
