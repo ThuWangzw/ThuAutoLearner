@@ -12,6 +12,7 @@ from HwHTMLParser import hwHTTPParser
 from NewDetailParser import newDetailParser
 from DlListHTMLParser import dlListHTMLParser
 from http import cookiejar
+import FileIterator as fiter
 import sys
 import json
 import time
@@ -145,7 +146,7 @@ try:
                     for j in download_json['resultList'][i]['childMapData']:
                         for k in download_json['resultList'][i]['childMapData'][j]['courseCoursewareList']:
                             temp = k['resourcesMappingByFileId']
-                            if(os.path.exists(rootpath+lesson[1]+'\\'+temp['fileName'])is not True):
+                            if(fiter.fileinpath(rootpath+lesson[1],temp['fileName'])is not True):
                                 print(k['title']+'\n')
                                 update.write(str(filenum)+'.文件标题：'+k['title']+'上传时间:'+time.asctime(time.localtime(temp['regDate']))+ ' 大小：'+str(int(temp['fileSize'])/1024)+'KB\n')
                                 filenum = filenum+1
@@ -212,7 +213,7 @@ try:
                         else:
                             update.write(' 有附件(已下载至课程对应文件夹)\n')
                             hfilepath = rootpath+lesson[1]+'\\'+'作业附件\\'+homework['courseHomeworkInfo']['homewkAffixFilename']
-                            if(os.path.exists(hfilepath)is not True):
+                            if(fiter.fileinpath(rootpath+lesson[1]+'/'+'作业附件',homework['courseHomeworkInfo']['homewkAffixFilename'])is not True):
                                 hfile_url = 'http://learn.cic.tsinghua.edu.cn/b/resource/downloadFileStream/'+homework['courseHomeworkInfo']['homewkAffix']
                                 hfile_req = request.Request(hfile_url,headers=header)
                                 hfile_html = opener.open(hfile_req).read()
@@ -283,7 +284,6 @@ try:
                     update.write('发布日期：'+hw[2]+' 截止日期：'+hw[3])
                     if(hhwp.havefile==1):
                         update.write(' 有附件(已下载至课程对应文件夹)\n')
-                        print(hhwp.url)
                         filerequest = request.Request(hhwp.url,headers=header)
                         fileresponse = opener.open(filerequest)
                         file = fileresponse.read()
@@ -336,7 +336,7 @@ try:
                     filename = filename.replace("\\","_")
                     filename = filename.replace("/","_")
                     dlpath = rootpath+lesson[1]+'\\'+filename
-                    if(os.path.exists(dlpath) is not True):
+                    if(fiter.fileinpath(rootpath+lesson[1],filename) is not True):
                         print(dlpath)
 
                         filecontent = dlFileResponse.read()
